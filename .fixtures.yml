@@ -1,0 +1,11 @@
+fixtures:
+  repositories:
+    nfs:
+      repo: "https://github.com/Adaptavist/puppet-nfs"
+    stdlib:
+      repo: "https://github.com/Adaptavist/puppetlabs-stdlib"
+    rpcbind:
+      repo: "https://github.com/Adaptavist/puppet-ghoneycutt-rpcbind"
+  symlinks:
+    nfs_server_exports: "#{source_dir}"
+
