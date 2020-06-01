@@ -16,8 +16,8 @@ Path to the system exports file, defaults to the value of the `exports_path` fro
 
 `nfs_server_exports::refresh_exports_exec`
 
-The exec that refrehes the exports, defaults to *update_nfs_exports*, which runs in the parent NFS module
+The exec that refrehes the exports, defaults to **update_nfs_exports**, which is defined in the parent NFS module
 
-``nfs_server_exports::manage_all_exports`
+`nfs_server_exports::manage_all_exports`
 
-Flag to determine if this module manages *ALL* exports, if true the exports file will be cleared before any other action, defaults to *true*
+Flag to determine if this module manages **ALL** exports, if true the exports file will be cleared before any other action, defaults to *true*

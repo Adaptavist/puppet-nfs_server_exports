@@ -16,141 +16,149 @@ describe 'nfs_server_exports', :type => 'class' do
     clear_exports_exec = "clear_exports_file_content"
 
     context "should create exports, reload the list and remove any unmanaged values" do
-    let(:facts) {
-      { :osfamily => 'RedHat',
-        :operatingsystem => 'CentOS',
-        :operatingsystemrelease => '7.0',
-        :operatingsystemmajrelease => '7',
-        :concat_basedir => '/tmp',
-        :kernel => 'Linux',
-        :id => 'root',
-        :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+      # define params of "upstream" classes
+      let(:pre_condition) { "class { 'nfs': server => true }"}
+      # define system facts
+      let(:facts) {
+        { :osfamily => 'RedHat',
+          :operatingsystem => 'CentOS',
+          :operatingsystemrelease => '7.0',
+          :operatingsystemmajrelease => '7',
+          :concat_basedir => '/tmp',
+          :kernel => 'Linux',
+          :id => 'root',
+          :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+        }
       }
-    }
-    let(:params) {
-      { :exports => exports_hash,
-        :exports_path => exports_path,
-        :refresh_exports_exec => refresh_exec,
-        :manage_all_exports => true
+      # define class params
+      let(:params) {
+        { :exports => exports_hash,
+          :exports_path => exports_path,
+          :refresh_exports_exec => refresh_exec,
+          :manage_all_exports => true
+        }
       }
-    }
+      it { should contain_class('nfs')}
 
-    it { should contain_class('nfs')}
+      it { is_expected.to contain_exec(clear_exports_exec).with(
+        :command => "echo '' > #{exports_path}",
+        :require => "File[nfs_exports]",
+        :notify  => "Exec[#{refresh_exec}]"
+      )}
 
-    it { should contain_exec(clear_exports_exec).with(
-      :command => "echo '' > #{exports_path}",
-      :require => "File[nfs_exports]",
-      :notify  => "Exec[#{refresh_exec}]"
-    )}
+      it { should contain_file_line(export_1_name).with(
+        :path    => exports_path,
+        :line    => export_1_line,
+        :require => "Exec[#{clear_exports_exec}]"
+      )}
 
-    it { should contain_file_line(export_1_name).with(
-      :path    => exports_path,
-      :line    => export_1_line,
-      :require => "Exec[#{clear_exports_exec}]"
-    )}
-
-     it { should contain_file_line(export_2_name).with(
-      :path    => exports_path,
-      :line    => export_2_line,
-      :require => "Exec[#{clear_exports_exec}]"
-    )}
-
-
+       it { should contain_file_line(export_2_name).with(
+        :path    => exports_path,
+        :line    => export_2_line,
+        :require => "Exec[#{clear_exports_exec}]"
+      )}
     end
 
     context "should create exports, reload the list and keep any unmanaged values" do
-    let(:facts) {
-      { :osfamily => 'RedHat',
-        :operatingsystem => 'CentOS',
-        :operatingsystemrelease => '7.0',
-        :operatingsystemmajrelease => '7',
-        :concat_basedir => '/tmp',
-        :kernel => 'Linux',
-        :id => 'root',
-        :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+      # define params of "upstream" classes
+      let(:pre_condition) { "class { 'nfs': server => true }"}
+      # define system facts
+      let(:facts) {
+        { :osfamily => 'RedHat',
+          :operatingsystem => 'CentOS',
+          :operatingsystemrelease => '7.0',
+          :operatingsystemmajrelease => '7',
+          :concat_basedir => '/tmp',
+          :kernel => 'Linux',
+          :id => 'root',
+          :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+        }
       }
-    }
-    let(:params) {
-      { :exports => exports_hash,
-        :exports_path => exports_path,
-        :refresh_exports_exec => refresh_exec,
-        :manage_all_exports => false
+      # define class params
+      let(:params) {
+        { :exports => exports_hash,
+          :exports_path => exports_path,
+          :refresh_exports_exec => refresh_exec,
+          :manage_all_exports => false
+        }
       }
-    }
 
-    it { should contain_class('nfs')}
+      it { should contain_class('nfs')}
 
-    it { should_not contain_exec(clear_exports_exec)}
+      it { should_not contain_exec(clear_exports_exec)}
 
-    it { should contain_file_line(export_1_name).with(
-      :path    => exports_path,
-      :line    => export_1_line,
-      :require => "File[nfs_exports]"
-    )}
+      it { should contain_file_line(export_1_name).with(
+        :path    => exports_path,
+        :line    => export_1_line,
+        :require => "File[nfs_exports]"
+      )}
 
-     it { should contain_file_line(export_2_name).with(
-      :path    => exports_path,
-      :line    => export_2_line,
-      :require => "File[nfs_exports]"
-    )}
-
-
+       it { should contain_file_line(export_2_name).with(
+        :path    => exports_path,
+        :line    => export_2_line,
+        :require => "File[nfs_exports]"
+      )}
     end
 
-   context "should NOT create any new exports, reload the list and keep any unmanaged values" do
-    let(:facts) {
-      { :osfamily => 'RedHat',
-        :operatingsystem => 'CentOS',
-        :operatingsystemrelease => '7.0',
-        :operatingsystemmajrelease => '7',
-        :concat_basedir => '/tmp',
-        :kernel => 'Linux',
-        :id => 'root',
-        :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    context "should NOT create any new exports, reload the list and keep any unmanaged values" do
+       # define params of "upstream" classes
+      let(:pre_condition) { "class { 'nfs': server => true }"}
+      # define system facts
+      let(:facts) {
+        { :osfamily => 'RedHat',
+          :operatingsystem => 'CentOS',
+          :operatingsystemrelease => '7.0',
+          :operatingsystemmajrelease => '7',
+          :concat_basedir => '/tmp',
+          :kernel => 'Linux',
+          :id => 'root',
+          :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+        }
       }
-    }
-    let(:params) {
-      { :exports => :undef,
-        :exports_path => exports_path,
-        :refresh_exports_exec => refresh_exec,
-        :manage_all_exports => false
+      # define class params
+      let(:params) {
+        { :exports => :undef,
+          :exports_path => exports_path,
+          :refresh_exports_exec => refresh_exec,
+          :manage_all_exports => false
+        }
       }
-    }
 
-    it { should contain_class('nfs')}
+      it { should contain_class('nfs')}
 
-    it { should_not contain_exec(clear_exports_exec)}
-
+      it { should_not contain_exec(clear_exports_exec)}
     end
 
-   context "should NOT create any exports, reload the list and remove any unmanaged values" do
-    let(:facts) {
-      { :osfamily => 'RedHat',
-        :operatingsystem => 'CentOS',
-        :operatingsystemrelease => '7.0',
-        :operatingsystemmajrelease => '7',
-        :concat_basedir => '/tmp',
-        :kernel => 'Linux',
-        :id => 'root',
-        :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    context "should NOT create any exports, reload the list and remove any unmanaged values" do
+      # define params of "upstream" classes
+      let(:pre_condition) { "class { 'nfs': server => true }"}
+      # define system facts
+      let(:facts) {
+        { :osfamily => 'RedHat',
+          :operatingsystem => 'CentOS',
+          :operatingsystemrelease => '7.0',
+          :operatingsystemmajrelease => '7',
+          :concat_basedir => '/tmp',
+          :kernel => 'Linux',
+          :id => 'root',
+          :path => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+        }
       }
-    }
-    let(:params) {
-      { :exports => :undef,
-        :exports_path => exports_path,
-        :refresh_exports_exec => refresh_exec,
-        :manage_all_exports => true
+      # define class params
+      let(:params) {
+        { :exports => :undef,
+          :exports_path => exports_path,
+          :refresh_exports_exec => refresh_exec,
+          :manage_all_exports => true
+        }
       }
-    }
 
-    it { should contain_class('nfs')}
+      it { should contain_class('nfs')}
 
-    it { should contain_exec(clear_exports_exec).with(
-      :command => "echo '' > #{exports_path}",
-      :require => "File[nfs_exports]",
-      :notify  => "Exec[#{refresh_exec}]"
-    )}
-
+      it { should contain_exec(clear_exports_exec).with(
+        :command => "echo '' > #{exports_path}",
+        :require => "File[nfs_exports]",
+        :notify  => "Exec[#{refresh_exec}]"
+      )}
     end
-
 end
